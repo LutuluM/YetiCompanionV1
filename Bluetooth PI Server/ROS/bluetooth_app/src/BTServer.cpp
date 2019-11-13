@@ -16,13 +16,15 @@ BTServer::BTServer(){
 	loc_addr.rc_channel = (uint8_t) 1;	
 	str2ba(addr, &loc_addr.rc_bdaddr);
 	
-	if(bind(s, (struct sockaddr *)&loc_addr, sizeof(loc_addr)) < 0)
-		printf("Error Binding: %s",strerror(errno));
+	if(bind(s, (struct sockaddr *)&loc_addr, sizeof(loc_addr)) < 0){
+		printf("Error Binding: %s \n",strerror(errno));
+		exit(-1);
+	}
 	else
 		;//printf("Binding completed starting listening mode.\n");
 	
 	if(listen(s, 1) < 0)
-		printf("Error Listening: %s",strerror(errno));
+		printf("Error Listening: %s\n",strerror(errno));
 	else
 		;//printf("wating for cleint to accept.\n");
 

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(bluetooth)
+project(bluetooth_app)
+add_compile_options("-std=c++11")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -35,8 +36,8 @@ add_library(bluetoothclass src/BTServer.cpp)
 target_link_libraries(bluetoothclass bluetooth)
 
 add_executable(bluetooth_node src/bluetooth.cpp)
-add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(${PROJECT_NAME}_node bluetoothclass ${catkin_LIBRARIES})
+add_dependencies(bluetooth_node ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(bluetooth_node bluetoothclass ${catkin_LIBRARIES})
 
 #add_dependencies(bluetooth_node bluetoothclass)
 #${PROJECT_NAME}_generate_messages_cpp)

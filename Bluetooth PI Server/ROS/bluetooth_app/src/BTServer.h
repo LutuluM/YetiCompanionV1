@@ -21,7 +21,7 @@ public:
 	template <class WriteTemp>
 	void Write(WriteTemp input,char type){
 	        char * output = (char *) malloc(sizeof(WriteTemp)+1);
-	        printf("Package length is  %d",sizeof(WriteTemp)+1);
+	        printf("Package length is  %d",(int)sizeof(WriteTemp)+1);
 			output[0] = type;
 	        output[1] = input;
 	        int status = write(client,output,sizeof(WriteTemp)+1);

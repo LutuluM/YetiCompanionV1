@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "BTServer.h"
-#include "bluetooth/bluetoothmsg.h"
+#include "bluetooth_app/bluetoothmsg.h"
 
 BTServer btserver; //used for sending messages to and from Phone app
 ros::Publisher btPub,btControlPub;
@@ -14,7 +14,7 @@ void TurtleCallback(const geometry_msgs::Twist& msg){
 	printf("X vel is %f \n",msg.linear.x);
 }
 
-void GPIOCallBack(const bluetooth::bluetoothmsg::ConstPtr& msg){
+void GPIOCallBack(const bluetooth_app::bluetoothmsg::ConstPtr& msg){
 	btserver.Write(msg->ESTOP,(char)1);
 	btserver.Write(msg->driveModeLed,(char)2);
 	btserver.Write(msg->robotechError,(char)3);
@@ -32,8 +32,8 @@ int main(int argc, char **argv){
 	ros::Rate r(10);//update 10hz
 	
 	//ros::Subscriber sub = nh.subscribe("turtle1/cmd_vel",1,&TurtleCallback);
-	btPub = nh.advertise<bluetooth::bluetoothmsg>("bluetooth/status", 5);
-	btControlPub = nh.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 5);
+	btPub = nh.advertise<bluetooth_app::bluetoothmsg>("bluetooth/status", 5);
+	btControlPub = nh.advertise<geometry_msgs::Twist>("yeti/cmd_vel", 5);
 	//For all the topics i want to listen too
 	/*ros::Subscriber sub = nh.subscribe("turtle1/cmd_vel",1,&TurtleCallback);
 	ros::Subscriber sub = nh.subscribe("turtle1/cmd_vel",1,&TurtleCallback);
@@ -41,15 +41,21 @@ int main(int argc, char **argv){
 	ros::Subscriber sub = nh.subscribe("turtle1/cmd_vel",1,&TurtleCallback);*/
 
 	while(ros::ok()){
-		printf("Waiting for client to connect\n");
+		printf("Starting Bluetooth Server\n");
 		btserver.startServer();
 		while(btserver.isConnected() && ros::ok()){//loop until connection is killed
 			ros::spinOnce();
 			r.sleep();
-			msg.linear.x = btserver.lx;
-			msg.linear.y = btserver.ly;
-			msg.angular.z = btserver.az;
+			msg.linear.x = 10*btserver.lx;
+			msg.linear.y = 10*btserver.ly;
+			msg.angular.z = -10*btserver.az;
 			btControlPub.publish(msg);
+			static int i=0;
+		       	i++;
+			if(i==4){
+				btserver.az = 0;
+				i=0;
+			}
 		}
 		btserver.Close();
 	}
